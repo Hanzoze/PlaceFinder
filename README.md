@@ -1,18 +1,46 @@
 # PIM — aplikacja dla studentów (nazwa robocza)
 
-## Uruchomienie
+## Uruchomienie (dla nowych osób w zespole)
+
+### Co trzeba mieć
+- [Node.js](https://nodejs.org) w wersji LTS i [Git](https://git-scm.com)
+- Telefon z aplikacją **Expo Go** (Google Play / App Store), w tej samej sieci Wi-Fi co komputer
+
+### Pierwsze uruchomienie
+```bash
+git clone https://github.com/Hanzoze/PlaceFinder_PIM.git
+cd PlaceFinder_PIM
 npm install
-npx expo start   → zeskanuj QR w Expo Go
+npx expo start
+```
+Zeskanuj kod QR z terminala: na Androidzie w aplikacji Expo Go, na iPhonie zwykłym aparatem.
+Plik `.env` nie jest potrzebny – konfiguracja Firebase jest w repo (`src/services/firebaseConfig.ts`).
+
+Przy pierwszym uruchomieniu aplikacja poprosi o lokalizację. Bez niej liczy odległości od kampusu PWr.
+
+### Gdy coś nie działa
+| Problem | Rozwiązanie |
+|---|---|
+| Windows PowerShell: „running scripts is disabled” | Zamiast `npx` pisz `npx.cmd`, np. `npx.cmd expo start` |
+| Telefon nie łączy się z komputerem | `npx expo start --tunnel` (działa też w innej sieci) |
+| Windows pyta o zaporę dla Node.js | Zezwól w sieciach prywatnych |
+| Expo Go pisze o niezgodnej wersji SDK | Zaktualizuj Expo Go (projekt jest na Expo SDK 58) |
+| Po `git pull` aplikacja się sypie | `npm install`, potem `npx expo start --clear` |
+| Lista pokazuje „Nie udało się pobrać lokali” | Sprawdź internet; szary tekst pod komunikatem mówi, co poszło nie tak |
+
+Dostęp do konsoli Firebase (projekt `pim-pwr`) daje właściciel projektu: Project settings → Users and permissions, rola Editor.
 
 ## Struktura
-src/types      – typy danych (Place)
-src/components – komponenty UI
-src/screens    – ekrany (1 plik = 1 ekran)
-src/navigation – typy nawigacji (taby + stack ze szczegółami)
-src/context    – wspólna lista lokali dla Listy, Mapy i Szczegółów
-src/services   – Firebase, lokalizacja
+```text
+src/types       – typy danych (Place)
+src/components  – komponenty UI
+src/screens     – ekrany (1 plik = 1 ekran)
+src/navigation  – typy nawigacji (taby + stack ze szczegółami)
+src/context     – wspólna lista lokali dla Listy, Mapy i Szczegółów
+src/services    – Firebase, lokalizacja
 data/places.csv – lokale wgrywane do bazy
-scripts/       – skrypty do zbierania i wgrywania lokali
+scripts/        – skrypty do zbierania i wgrywania lokali
+```
 
 ## Dane (Firebase, projekt pim-pwr)
 Lokale są w Firestore, kolekcja `places`. Aplikacja tylko je czyta, nie potrzebuje `.env`.
@@ -32,4 +60,16 @@ Skrypty:
 
 
 ## Git
-Każda funkcja w osobnej gałęzi: feature/<nazwa>, merge przez Pull Request.
+Każda funkcja w osobnej gałęzi `feature/<nazwa>`, merge do `main` przez Pull Request.
+
+```bash
+git switch main
+git pull                          # najnowszy kod
+git switch -c feature/<nazwa>     # nowa gałąź
+# ...zmiany...
+npx tsc --noEmit                  # sprawdzenie typów przed commitem
+git add -A
+git commit -m "Krótko: co zmieniasz"
+git push -u origin feature/<nazwa>
+```
+Potem na GitHubie: **Compare & pull request** → ktoś z zespołu przegląda → **Merge**.
