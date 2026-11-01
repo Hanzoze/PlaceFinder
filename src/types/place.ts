@@ -4,7 +4,7 @@ export type PriceLevel =
   | 'PRICE_LEVEL_EXPENSIVE'
   | 'PRICE_LEVEL_VERY_EXPENSIVE';
 
-export type WorkingHours = Record<string, string>;
+export type WorkingHours = Record<string, string | string[]>;
 
 export type Place = {
   id: string;
@@ -17,7 +17,8 @@ export type Place = {
   priceToPln?: number;
   rating?: number;
   reviewCount?: number;
-  categories?: string[];      
+  categories?: string[];
+  tags?: string[];            // wifi | sockets | quiet | laptop_friendly
   workingHours?: WorkingHours;
   photoUrl?: string;
   phone?: string;

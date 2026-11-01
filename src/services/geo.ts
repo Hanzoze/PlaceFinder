@@ -5,10 +5,14 @@ export type Coords = { latitude: number; longitude: number };
 export const PWR_CAMPUS: Coords = { latitude: 51.1079, longitude: 17.0614 };
 
 export async function getUserLocation(): Promise<Coords> {
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== 'granted') return PWR_CAMPUS;
-  const pos = await Location.getCurrentPositionAsync({});
-  return { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') return PWR_CAMPUS;
+    const pos = await Location.getCurrentPositionAsync({});
+    return { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+  } catch {
+    return PWR_CAMPUS;
+  }
 }
 
 export function distanceKm(a: Coords, b: Coords): number {
