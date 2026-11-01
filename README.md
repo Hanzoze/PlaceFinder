@@ -9,6 +9,8 @@ src/types      – typy danych (Place)
 src/data       – dane testowe
 src/components – komponenty UI
 src/screens    – ekrany (1 plik = 1 ekran)
+src/navigation – typy nawigacji (taby + stack ze szczegółami)
+src/context    – wspólna lista lokali dla Listy, Mapy i Szczegółów
 
 
 ## Git

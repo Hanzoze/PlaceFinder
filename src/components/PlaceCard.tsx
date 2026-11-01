@@ -2,15 +2,9 @@ import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Place } from '../types/place';
 import { isOpenNow, todayHours } from '../utils/workingHours';
 import { walkMinutes } from '../services/geo';
+import { formatPrice } from '../utils/price';
 
 type Props = { place: Place; onPress?: () => void };
-
-function formatPrice(p: Place): string {
-  if (p.priceFromPln != null) return `${p.priceFromPln}–${p.priceToPln} zł`;
-  if (p.priceLevel) return 'zł'.repeat(['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE',
-    'PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'].indexOf(p.priceLevel) + 1);
-  return 'cena: brak danych';
-}
 
 export default function PlaceCard({ place, onPress }: Props) {
   const open = isOpenNow(place.workingHours);

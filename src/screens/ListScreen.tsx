@@ -1,9 +1,12 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, View, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import PlaceCard from '../components/PlaceCard';
-import { useNearbyPlaces } from '../hooks/useNearbyPlaces';
+import { usePlaces } from '../context/PlacesContext';
+import { RootNavigation } from '../navigation/types';
 
 export default function ListScreen() {
-  const { places, loading, error, reload } = useNearbyPlaces();
+  const { places, loading, error, reload } = usePlaces();
+  const navigation = useNavigation<RootNavigation>();
 
   if (loading && places.length === 0) {
     return <View style={styles.center}><ActivityIndicator size="large" /></View>;
@@ -23,7 +26,9 @@ export default function ListScreen() {
       <FlatList
         data={places}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => <PlaceCard place={item} />}
+        renderItem={({ item }) => (
+          <PlaceCard place={item} onPress={() => navigation.navigate('Details', { placeId: item.id })} />
+        )}
         refreshing={loading}
         onRefresh={reload}
         ListEmptyComponent={<Text>Brak lokali w pobliżu</Text>}
