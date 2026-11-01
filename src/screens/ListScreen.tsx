@@ -16,6 +16,7 @@ export default function ListScreen() {
     return (
       <View style={styles.center}>
         <Text>Nie udało się pobrać lokali</Text>
+        <Text style={styles.errorDetail}>{error}</Text>
         <Pressable onPress={reload}><Text style={styles.retry}>Spróbuj ponownie</Text></Pressable>
       </View>
     );
@@ -40,5 +41,6 @@ export default function ListScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#f4f6fb' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 },
+  errorDetail: { color: '#999', fontSize: 12, textAlign: 'center', paddingHorizontal: 24 },
   retry: { color: '#3355aa', fontWeight: '600' },
 });
