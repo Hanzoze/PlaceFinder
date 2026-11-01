@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Place } from '../types/place';
-import { fetchNearbyPlaces } from '../services/places';
+import { fetchPlaces } from '../services/places';
 import { Coords, getUserLocation, distanceKm } from '../services/geo';
 
 export function useNearbyPlaces() {
@@ -13,9 +13,8 @@ export function useNearbyPlaces() {
     setLoading(true);
     setError(null);
     try {
-      const me = await getUserLocation();
+      const [me, result] = await Promise.all([getUserLocation(), fetchPlaces()]);
       setLocation(me);
-      const result = await fetchNearbyPlaces(me);
       const withDistance = result
         .map(p => ({ ...p, distanceKm: distanceKm(me, p) }))
         .sort((a, b) => a.distanceKm - b.distanceKm);

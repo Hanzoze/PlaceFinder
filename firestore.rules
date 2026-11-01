@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// Wszystko, czego tu nie ma, jest zablokowane.
+// Lokale wgrywa tylko skrypt `npm run seed` (klucz admina omija te reguły).
+// TODO (osoba 3): reguły dla grup i głosów
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /places/{placeId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

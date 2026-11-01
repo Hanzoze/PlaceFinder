@@ -17,7 +17,8 @@ export type Place = {
   priceToPln?: number;
   rating?: number;
   reviewCount?: number;
-  categories?: string[];      
+  categories?: string[];
+  tags?: string[];            // wifi | sockets | quiet | laptop_friendly
   workingHours?: WorkingHours;
   photoUrl?: string;
   phone?: string;

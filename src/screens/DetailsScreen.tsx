@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation/types';
 import { walkMinutes } from '../services/geo';
 import { Place } from '../types/place';
 import { formatPrice } from '../utils/price';
+import { TAG_LABELS } from '../utils/tags';
 import { isOpenNow, todayHours, weekSchedule } from '../utils/workingHours';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Details'>;
@@ -54,6 +55,13 @@ export default function DetailsScreen({ route, navigation }: Props) {
         )}
         {place.rating != null && (
           <Text style={styles.rating}>★ {place.rating} <Text style={styles.meta}>(opinie: {place.reviewCount ?? 0})</Text></Text>
+        )}
+        {!!place.tags?.length && (
+          <View style={styles.tags}>
+            {place.tags.map(t => (
+              <Text key={t} style={styles.tag}>{TAG_LABELS[t] ?? t}</Text>
+            ))}
+          </View>
         )}
 
         <View style={styles.card}>
@@ -123,6 +131,8 @@ const styles = StyleSheet.create({
   category: { color: '#3355aa', fontSize: 14, marginTop: -8 },
   rating: { fontSize: 16, fontWeight: '600' },
   meta: { color: '#666' },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  tag: { backgroundColor: '#e8eefc', color: '#3355aa', borderRadius: 12, paddingVertical: 4, paddingHorizontal: 10, fontSize: 13 },
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 12, gap: 8, elevation: 2 },
   infoRow: { flexDirection: 'row', gap: 12 },
   label: { width: 80, color: '#999' },
