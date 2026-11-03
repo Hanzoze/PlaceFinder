@@ -5,8 +5,6 @@ export type Profile = {
   email: string;
   university: string;
   faculty: string;
-  fieldOfStudy: string;
-  year: number;
   preferredTags: string[];       // klucze z TAG_LABELS
   favoritePlaceIds: string[];    // id z data/places.csv
   votesCount: number;
@@ -18,8 +16,6 @@ export const MOCK_PROFILE: Profile = {
   email: 'student@student.pwr.edu.pl',
   university: 'Politechnika Wrocławska',
   faculty: 'Wydział Informatyki i Telekomunikacji',
-  fieldOfStudy: 'Informatyka stosowana',
-  year: 2,
   preferredTags: ['wifi', 'sockets', 'quiet'],
   favoritePlaceIds: [
     'ChIJ-59eO1DpD0cRVMvJroXpGO0', // Kawiarnia 8m2

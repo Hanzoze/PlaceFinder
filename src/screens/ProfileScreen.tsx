@@ -49,8 +49,6 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Studia</Text>
         <InfoRow label="Uczelnia" value={profile.university} />
         <InfoRow label="Wydział" value={profile.faculty} />
-        <InfoRow label="Kierunek" value={profile.fieldOfStudy} />
-        <InfoRow label="Rok" value={String(profile.year)} />
       </View>
 
       <View style={styles.card}>
