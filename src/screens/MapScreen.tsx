@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
@@ -23,22 +22,17 @@ function markerDescription(p: Place): string {
 }
 
 export default function MapScreen() {
-  const { places, location, loading, error, reload } = usePlaces();
+  const { places, loading, error, reload } = usePlaces();
   const navigation = useNavigation<RootNavigation>();
-  const mapRef = useRef<MapView>(null);
-
-  useEffect(() => {
-    if (location) mapRef.current?.animateToRegion({ ...location, ...DELTA }, 500);
-  }, [location]);
 
   const withCoords = places.filter(p => Number.isFinite(p.latitude) && Number.isFinite(p.longitude));
 
   return (
     <View style={styles.container}>
+      {/* Zawsze startujemy nad kampusem; użytkownik widzi się jako niebieska kropka */}
       <MapView
-        ref={mapRef}
         style={StyleSheet.absoluteFill}
-        initialRegion={{ ...(location ?? PWR_CAMPUS), ...DELTA }}
+        initialRegion={{ ...PWR_CAMPUS, ...DELTA }}
         showsUserLocation
       >
         {withCoords.map(p => (

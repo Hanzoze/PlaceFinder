@@ -38,6 +38,7 @@ src/screens     – ekrany (1 plik = 1 ekran)
 src/navigation  – typy nawigacji (taby + stack ze szczegółami)
 src/context     – wspólna lista lokali dla Listy, Mapy i Szczegółów
 src/services    – Firebase, lokalizacja
+src/mocks       – dane tymczasowe (np. profil), do podmiany na Firebase
 data/places.csv – lokale wgrywane do bazy
 scripts/        – skrypty do zbierania i wgrywania lokali
 ```
@@ -68,6 +69,7 @@ git pull                          # najnowszy kod
 git switch -c feature/<nazwa>     # nowa gałąź
 # ...zmiany...
 npx tsc --noEmit                  # sprawdzenie typów przed commitem
+npm run lint                      # ESLint (npx expo lint)
 git add -A
 git commit -m "Krótko: co zmieniasz"
 git push -u origin feature/<nazwa>
