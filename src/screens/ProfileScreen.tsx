@@ -1,5 +1,6 @@
-// TODO: prawdziwe konto i ulubione z Firebase, na razie dane z src/mocks/profile.ts
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// Imię, e-mail i zdjęcie z konta Google; reszta (ulubione, tagi, liczniki) nadal z mocka – etap 3
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { usePlaces } from '../context/PlacesContext';
 import { MOCK_PROFILE } from '../mocks/profile';
@@ -12,7 +13,12 @@ function initials(name: string): string {
 }
 
 export default function ProfileScreen() {
-  const profile = MOCK_PROFILE;
+  const { user, logout, busy } = useAuth();
+  const profile = {
+    ...MOCK_PROFILE,
+    name: user?.name ?? MOCK_PROFILE.name,
+    email: user?.email ?? MOCK_PROFILE.email,
+  };
   const { places, loading } = usePlaces();
   const navigation = useNavigation<RootNavigation>();
 
@@ -29,9 +35,13 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{initials(profile.name)}</Text>
-        </View>
+        {user?.photoURL ? (
+          <Image source={{ uri: user.photoURL }} style={styles.avatar} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initials(profile.name)}</Text>
+          </View>
+        )}
         <Text style={styles.name}>{profile.name}</Text>
         <Text style={styles.meta}>{profile.email}</Text>
       </View>
@@ -79,7 +89,13 @@ export default function ProfileScreen() {
         ))}
       </View>
 
-      <Text style={styles.note}>Dane przykładowe – logowanie jest w przygotowaniu</Text>
+      <Pressable style={styles.logout} onPress={logout} disabled={busy}>
+        <Text style={styles.logoutText}>Wyloguj się</Text>
+      </Pressable>
+
+      <Text style={styles.note}>
+        {user?.isDemo ? 'Tryb demo – ' : ''}Ulubione i statystyki są na razie przykładowe
+      </Text>
     </ScrollView>
   );
 }
@@ -119,5 +135,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#dde3f0',
   },
   favoriteName: { flex: 1, color: '#333', fontWeight: '500' },
+  logout: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 12, alignItems: 'center', elevation: 2 },
+  logoutText: { color: '#c0392b', fontWeight: '600' },
   note: { color: '#999', fontSize: 12, textAlign: 'center' },
 });

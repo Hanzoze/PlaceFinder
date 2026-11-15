@@ -95,6 +95,10 @@ export default function DetailsScreen({ route, navigation }: Props) {
           ))}
         </View>
 
+        <Pressable style={styles.voteButton} onPress={() => navigation.navigate('PickGroup', { placeId: place.id })}>
+          <Text style={styles.voteButtonText}>+ Dodaj do głosowania w grupie</Text>
+        </Pressable>
+
         {place.workingHours && (
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Godziny otwarcia</Text>
@@ -138,6 +142,8 @@ const styles = StyleSheet.create({
   label: { width: 80, color: '#999' },
   value: { flex: 1, color: '#333' },
   actions: { flexDirection: 'row', gap: 8 },
+  voteButton: { backgroundColor: '#3355aa', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
+  voteButtonText: { color: '#fff', fontWeight: '600' },
   action: { flex: 1, backgroundColor: '#3355aa', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
   actionDisabled: { opacity: 0.35 },
   actionText: { color: '#fff', fontWeight: '600' },

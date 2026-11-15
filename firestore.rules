@@ -2,12 +2,100 @@ rules_version = '2';
 
 // Wszystko, czego tu nie ma, jest zablokowane.
 // Lokale wgrywa tylko skrypt `npm run seed` (klucz admina omija te reguły).
-// TODO (osoba 3): reguły dla grup i głosów
+// Grupy: src/services/groups.ts. Każdy telefon ma anonimowe konto (uid).
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+
     match /places/{placeId} {
       allow read: if true;
       allow write: if false;
+    }
+
+    // Kod zaproszenia -> groupId. Da się pobrać znając kod, ale nie da się wylistować kodów.
+    // Tworzy go twórca razem z grupą (jeden batch); istniejącego kodu nie można nadpisać.
+    match /invites/{code} {
+      function newGroup() {
+        return getAfter(/databases/$(database)/documents/groups/$(request.resource.data.groupId)).data;
+      }
+      allow get: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['groupId'])
+        && newGroup().createdBy == uid()
+        && newGroup().code == code;
+    }
+
+    match /groups/{groupId} {
+      function isMember() { return uid() in resource.data.memberIds; }
+      function isOpen() { return resource.data.status == 'open'; }
+      function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+      function onlyMyNameChanged() {
+        return request.resource.data.memberNames.diff(resource.data.memberNames).affectedKeys().hasOnly([uid()])
+          && validName(request.resource.data.memberNames[uid()], 30);
+      }
+      function validName(s, max) { return s is string && s.size() > 0 && s.size() <= max; }
+
+      // Czytać mogą tylko członkowie (lista „moje grupy” = zapytanie memberIds array-contains uid)
+      allow read: if signedIn() && isMember();
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['name', 'code', 'createdBy', 'createdAt', 'status', 'memberIds', 'memberNames', 'placeIds'])
+        && validName(request.resource.data.name, 50)
+        && request.resource.data.createdBy == uid()
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.status == 'open'
+        && request.resource.data.memberIds == [uid()]
+        && request.resource.data.memberNames.keys().hasOnly([uid()])
+        && validName(request.resource.data.memberNames[uid()], 30)
+        && request.resource.data.placeIds == [];
+
+      allow update: if signedIn() && (
+        // dołączenie po kodzie: dopisuję tylko siebie
+        (isOpen() && !isMember()
+          && changed().hasOnly(['memberIds', 'memberNames'])
+          && request.resource.data.memberIds == resource.data.memberIds.concat([uid()])
+          && onlyMyNameChanged())
+        // zmiana własnego nicku
+        || (isMember() && changed().hasOnly(['memberNames']) && onlyMyNameChanged())
+        // propozycja lokalu: jeden nowy, istniejący w bazie, najwyżej 20
+        || (isMember() && isOpen()
+          && changed().hasOnly(['placeIds'])
+          && request.resource.data.placeIds.size() == resource.data.placeIds.size() + 1
+          && request.resource.data.placeIds.size() <= 20
+          && request.resource.data.placeIds.hasAll(resource.data.placeIds)
+          && exists(/databases/$(database)/documents/places/$(request.resource.data.placeIds[request.resource.data.placeIds.size() - 1])))
+        // zakończenie głosowania przez twórcę
+        || (resource.data.createdBy == uid()
+          && changed().hasOnly(['status'])
+          && request.resource.data.status == 'closed')
+      );
+
+      // Jeden głos na osobę: id dokumentu = uid głosującego
+      match /votes/{voterId} {
+        function group() { return get(/databases/$(database)/documents/groups/$(groupId)).data; }
+
+        allow read: if signedIn() && uid() in group().memberIds;
+        allow create, update: if signedIn()
+          && voterId == uid()
+          && uid() in group().memberIds
+          && group().status == 'open'
+          && request.resource.data.keys().hasOnly(['placeId', 'updatedAt'])
+          && request.resource.data.placeId in group().placeIds
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if signedIn() && voterId == uid() && group().status == 'open';
+      }
+    }
+  
+
+    // Profil użytkownika (etap 3, ulubione): users/{uid}. Czyta i pisze tylko właściciel.
+    match /users/{userId} {
+      allow read, delete: if signedIn() && uid() == userId;
+      allow create, update: if signedIn() && uid() == userId
+        && request.resource.data.keys().hasOnly(['name', 'preferredTags', 'favoritePlaceIds', 'updatedAt'])
+        && request.resource.data.get('favoritePlaceIds', []) is list
+        && request.resource.data.get('favoritePlaceIds', []).size() <= 100
+        && request.resource.data.get('preferredTags', []) is list;
     }
   }
 }
