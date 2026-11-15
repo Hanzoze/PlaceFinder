@@ -59,6 +59,30 @@ Skrypty:
 - `npm run collect` – ponownie pobiera kandydatów z RapidAPI (`RAPIDAPI_KEY` w `.env`), NADPISUJE CSV
 - `npm run deploy:rules` – wgrywa `firestore.rules`
 
+## Grupy i głosowanie (backend dla ekranów)
+Każdy telefon dostaje anonimowe konto Firebase (bez rejestracji), sesja zostaje po restarcie.
+Dane w Firestore: `groups/{id}` (członkowie, propozycje, status), `groups/{id}/votes/{uid}` (jeden głos na osobę),
+`invites/{kod}` (kod zaproszenia → grupa). Kto może co, opisują `firestore.rules`.
+
+Hooki (dane na żywo – zmiany innych osób pojawiają się od razu):
+- `useMyGroups()` → `{ groups, loading, error }` – moje grupy, najnowsze pierwsze
+- `useGroup(groupId)` → `{ group, results, winners, myVote, isOwner, uid, loading, error }`
+  - `results` – wszystkie propozycje `{ placeId, count, voterIds }`, od najwięcej głosów
+  - `winners` – `placeId` zwycięzców (kilka przy remisie, pusta lista bez głosów)
+
+Akcje (`src/services/groups.ts`, wszystkie async; błąd pokazuj przez `groupErrorMessage(e)`):
+| Funkcja | Co robi |
+|---|---|
+| `createGroup(nazwa, nick)` | nowa grupa, zwraca `groupId`; kod jest w `group.code` |
+| `joinGroup(kod, nick)` | dołącza po kodzie (wielkość liter i spacje bez znaczenia), zwraca `groupId` |
+| `proposePlace(group, placeId)` | dodaje lokal do propozycji (max 20) |
+| `vote(groupId, placeId)` / `removeVote(groupId)` | oddaje, zmienia albo cofa swój głos |
+| `closeVoting(groupId)` | tylko twórca; kończy głosowanie, wynik zostaje |
+
+Zaproszenie linkiem (`src/utils/invite.ts`): `inviteMessage(nazwa, kod)` – tekst do `Share.share`,
+`codeFromLink(url)` – kod z otwartego linku (`placefinder://join?code=...`, w Expo Go `exp://.../--/join?code=...`).
+
+Wymaga włączonego logowania anonimowego: konsola Firebase → Authentication → Sign-in method → Anonymous.
 
 ## Git
 Każda funkcja w osobnej gałęzi `feature/<nazwa>`, merge do `main` przez Pull Request.

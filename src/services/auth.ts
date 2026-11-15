@@ -39,7 +39,9 @@ async function firebaseAuth() {
   return { ...authLib, auth };
 }
 
-function toAuthUser(u: { uid: string; displayName: string | null; email: string | null; photoURL: string | null }): AuthUser {
+type FbUser = { uid: string; displayName: string | null; email: string | null; photoURL: string | null; isAnonymous: boolean };
+
+function toAuthUser(u: FbUser): AuthUser {
   return { uid: u.uid, name: u.displayName ?? 'Użytkownik', email: u.email ?? '', photoURL: u.photoURL, isDemo: false };
 }
 
@@ -53,7 +55,8 @@ export function subscribeAuth(cb: (u: AuthUser | null) => void): () => void {
   let cancelled = false;
   firebaseAuth().then(({ auth, onAuthStateChanged }) => {
     if (cancelled) return;
-    unsub = onAuthStateChanged(auth, u => cb(u ? toAuthUser(u) : null));
+    // Konto anonimowe (z ensureSignedIn w groups) nie liczy się jako zalogowany użytkownik
+    unsub = onAuthStateChanged(auth, u => cb(u && !u.isAnonymous ? toAuthUser(u) : null));
   });
   return () => { cancelled = true; unsub(); };
 }
