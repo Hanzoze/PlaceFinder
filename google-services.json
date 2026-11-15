@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "175426218190",
+    "project_id": "pim-pwr",
+    "storage_bucket": "pim-pwr.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175426218190:android:0ae0b94d9b31f503a8889f",
+        "android_client_info": {
+          "package_name": "pl.pwr.pim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "175426218190-12qpqh9d4u2nqouht635c9h7q2hvj4ke.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.pwr.pim",
+            "certificate_hash": "9fdde58766124582553a239ed95ae167a9f8587d"
+          }
+        },
+        {
+          "client_id": "175426218190-0mfv8mv4443t533f3ianj9ki19kou4lo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfrVOm4zhr7VtxzSm4TrLOxSS5MFHC7Wo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "175426218190-0mfv8mv4443t533f3ianj9ki19kou4lo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

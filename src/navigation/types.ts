@@ -9,6 +9,7 @@ export type TabParamList = {
 };
 
 export type RootStackParamList = {
+  Login: undefined;
   Tabs: NavigatorScreenParams<TabParamList>;
   Details: { placeId: string };
 };
