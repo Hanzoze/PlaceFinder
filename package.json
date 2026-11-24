@@ -37,7 +37,8 @@
     "collect": "node --env-file=.env scripts/collect-places.mjs",
     "seed": "node scripts/seed-places.mjs",
     "deploy:rules": "npx firebase-tools deploy --only firestore:rules",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "tags": "node scripts/derive-tags.mjs"
   },
   "private": true
 }

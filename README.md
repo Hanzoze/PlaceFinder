@@ -87,10 +87,9 @@ src/components  – komponenty UI
 src/screens     – ekrany (1 plik = 1 ekran)
 src/navigation  – typy nawigacji (logowanie → taby + stack: szczegóły, grupa, wybór lokalu/grupy)
 src/context     – AuthContext (zalogowany użytkownik), PlacesContext (wspólna lista lokali)
-src/hooks       – useNearbyPlaces, useMyGroups, useGroup
+src/hooks       – useNearbyPlaces, useMyGroups, useGroup, useProfile
 src/services    – Firebase (firebase.ts: app, db, auth), logowanie (auth.ts), grupy, lokalizacja
 src/utils       – wyszukiwanie, ceny, godziny, głosy, link zaproszenia
-src/mocks       – dane tymczasowe (np. profil), do podmiany na Firebase
 data/places.csv – lokale wgrywane do bazy
 scripts/        – skrypty do zbierania i wgrywania lokali
 ```
@@ -104,7 +103,12 @@ Lokale są w Firestore, kolekcja `places`. Aplikacja tylko je czyta, nie potrzeb
 2. `npm run seed` – wgrywa CSV do bazy (nadpisuje, usuwa lokale bez `include=1`).
 
 Nie edytuj lokali w konsoli Firebase – kolejny seed to nadpisze.
-Tagi wpisuj oddzielone spacją: `wifi`, `sockets`, `quiet`, `laptop_friendly`.
+Tagi (oddzielone spacją, lista w `scripts/tags.mjs`, etykiety w `src/utils/tags.ts`):
+- ręczne – wpisujesz sam: `wifi`, `sockets`, `quiet`, `laptop_friendly`
+- wyliczane z kategorii, godzin i oceny – `npm run tags` (nadpisuje tylko je, ręczne zostają):
+  `coffee`, `lunch`, `sweets`, `polish`, `asian`, `takeaway`, `board_games`, `dog_friendly`, `early`, `late`, `weekend`, `top_rated`
+
+Po zmianie CSV albo `npm run tags` – `npm run seed`, żeby tagi trafiły do bazy.
 
 Skrypty:
 - `npm run seed` – potrzebny klucz admina w `../secrets/placefinder-admin.json` (poza repo, NIE commitować)
@@ -144,6 +148,14 @@ Zaproszenie linkiem (`src/utils/invite.ts`): `inviteMessage(nazwa, kod)` – tek
 `codeFromLink(url)` – kod z otwartego linku (`placefinder://join?code=...`, w Expo Go `exp://.../--/join?code=...`).
 
 Wymaga włączonego logowania Google i anonimowego (Authentication → Sign-in method).
+
+## Profil i ulubione
+Dane w Firestore: `users/{uid}` – `favoritePlaceIds` (max 100) i `preferredTags` („Czego szukam”, klucze z `TAG_LABELS`).
+`uid` jak w grupach (Google albo anonimowe w trybie demo). Dokument tworzy się przy pierwszym zapisie.
+
+- `useProfile()` → `{ favoriteIds, preferredTags, loading, error, isFavorite(placeId), toggleFavorite(placeId), toggleTag(tag) }`
+  – na żywo, serduszko na Szczegółach od razu zmienia listę w Profilu
+- Zapis: `src/services/profile.ts` (`setFavorite`, `setPreferredTags`); wymaga wgranych reguł `users/{uid}` z `firestore.rules`
 
 ## Git
 Każda funkcja w osobnej gałęzi `feature/<nazwa>`, merge do `main` przez Pull Request.

@@ -6,8 +6,8 @@ import { resolve } from 'node:path';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { DAYS, parseCsv } from './csv.mjs';
+import { TAGS } from './tags.mjs';
 
-const TAGS = ['wifi', 'sockets', 'quiet', 'laptop_friendly'];
 
 const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS ?? resolve('../secrets/placefinder-admin.json');
 initializeApp({ credential: cert(JSON.parse(readFileSync(keyPath, 'utf8'))) });

@@ -1,16 +1,16 @@
 // Lista moich grup + utworzenie nowej / dołączenie po kodzie (także z linku zaproszenia)
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator, Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View,
 } from 'react-native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import GroupRow from '../components/GroupRow';
 import { useAuth } from '../context/AuthContext';
 import { useMyGroups } from '../hooks/useMyGroups';
 import { createGroup, groupErrorMessage, joinGroup } from '../services/groups';
 import { RootStackParamList, TabParamList } from '../navigation/types';
-import { Group } from '../types/group';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, 'Głosowanie'>,
@@ -29,13 +29,14 @@ export default function VoteScreen({ navigation, route }: Props) {
   const [busy, setBusy] = useState(false);
 
   // Otwarto link placefinder://join?code=XXX -> od razu formularz dołączenia z kodem
+  // Stan ustawiany w trakcie renderu przy nowym kodzie, nie w useEffect (react-hooks/set-state-in-effect)
   const linkCode = route.params?.code;
-  useEffect(() => {
-    if (linkCode) {
-      setCode(linkCode.toUpperCase());
-      setMode('join');
-    }
-  }, [linkCode]);
+  const [handledCode, setHandledCode] = useState<string | undefined>();
+  if (linkCode && linkCode !== handledCode) {
+    setHandledCode(linkCode);
+    setCode(linkCode.toUpperCase());
+    setMode('join');
+  }
 
   const submit = async () => {
     setBusy(true);
@@ -111,21 +112,6 @@ export default function VoteScreen({ navigation, route }: Props) {
   );
 }
 
-function GroupRow({ group, onPress }: { group: Group; onPress: () => void }) {
-  const open = group.status === 'open';
-  return (
-    <Pressable style={styles.groupRow} onPress={onPress}>
-      <View style={{ flex: 1, gap: 2 }}>
-        <Text style={styles.groupName} numberOfLines={1}>{group.name}</Text>
-        <Text style={styles.meta}>
-          {group.memberIds.length} os. · {group.placeIds.length} propozycji · kod {group.code}
-        </Text>
-      </View>
-      <Text style={[styles.badge, open ? styles.badgeOpen : styles.badgeClosed]}>{open ? 'trwa' : 'zakończone'}</Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f4f6fb' },
   content: { padding: 16, gap: 8, paddingBottom: 32 },
@@ -141,13 +127,4 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.6 },
   error: { color: '#c0392b' },
   empty: { color: '#888', textAlign: 'center', marginTop: 24, lineHeight: 20 },
-  groupRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', borderRadius: 12, padding: 12, elevation: 2,
-  },
-  groupName: { fontSize: 16, fontWeight: '600' },
-  meta: { color: '#666', fontSize: 13 },
-  badge: { fontSize: 12, fontWeight: '600', paddingVertical: 3, paddingHorizontal: 8, borderRadius: 10, overflow: 'hidden' },
-  badgeOpen: { backgroundColor: '#e3f6e8', color: '#1e8a3c' },
-  badgeClosed: { backgroundColor: '#eee', color: '#777' },
 });

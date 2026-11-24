@@ -16,6 +16,9 @@ import DetailsScreen from './src/screens/DetailsScreen';
 import GroupScreen from './src/screens/GroupScreen';
 import PickPlaceScreen from './src/screens/PickPlaceScreen';
 import PickGroupScreen from './src/screens/PickGroupScreen';
+import FavoritesScreen from './src/screens/FavoritesScreen';
+import GroupListScreen from './src/screens/GroupListScreen';
+import PickTagsScreen from './src/screens/PickTagsScreen';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -80,6 +83,9 @@ function RootNavigator() {
           <Stack.Screen name="Group" component={GroupScreen} options={{ title: 'Grupa', headerBackTitle: 'Wróć' }} />
           <Stack.Screen name="PickPlace" component={PickPlaceScreen} options={{ title: 'Zaproponuj lokal', presentation: 'modal' }} />
           <Stack.Screen name="PickGroup" component={PickGroupScreen} options={{ title: 'Wybierz grupę', presentation: 'modal' }} />
+          <Stack.Screen name="Favorites" component={FavoritesScreen} options={{ title: 'Ulubione', headerBackTitle: 'Wróć' }} />
+          <Stack.Screen name="GroupList" component={GroupListScreen} options={{ title: 'Moje grupy', headerBackTitle: 'Wróć' }} />
+          <Stack.Screen name="PickTags" component={PickTagsScreen} options={{ title: 'Czego szukam', presentation: 'modal' }} />
         </>
       ) : (
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />

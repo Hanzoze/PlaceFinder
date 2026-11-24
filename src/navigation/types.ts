@@ -15,6 +15,9 @@ export type RootStackParamList = {
   Group: { groupId: string };
   PickPlace: { groupId: string };       // wybór lokalu do propozycji
   PickGroup: { placeId: string };       // wybór grupy dla lokalu (z Details)
+  Favorites: undefined;                 // wszystkie ulubione (z Profilu)
+  GroupList: { onlyOpen: boolean };     // moje grupy / aktywne głosowania (z Profilu)
+  PickTags: undefined;                  // „Czego szukam” (z Profilu)
 };
 
 export type RootNavigation = NativeStackNavigationProp<RootStackParamList>;
